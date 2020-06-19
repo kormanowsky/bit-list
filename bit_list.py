@@ -29,11 +29,11 @@ class BitList:
         return self.bits % 2 ** (key + 1) // 2 ** key
 
     def get_slice(
-        self,
-        start=0,
-        stop=-1,
-        step=1,
-        ):
+            self,
+            start=0,
+            stop=-1,
+            step=1,
+    ):
         if stop is None:
             stop = -1
         if step is None:
@@ -46,7 +46,7 @@ class BitList:
         current = start
         while current != stop and current > 0 and current < self.length:
             bits += self[current] * 2 ** ((current - min(start, stop))
-                    // step)
+                                          // step)
             current += step
         return BitList(bits)
 
@@ -80,17 +80,45 @@ class BitList:
                              )
 
     def __str__(self):
-        return str(bin(self.bits))[2:]
+        return str(bin(self.bits))[2:].zfill(self.length)
 
+    def __int__(self):
+        return self.bits
+
+    def __add__(self, other):
+        self.bits += int(other)
+        return self
+
+    def __sub__(self, other):
+        if int(self) >= int(other):
+            return BitList(int(self) - int(other))
+        raise ValueError("Cannot subtract bigger value from smaller one")
+
+    def __and__(self, other):
+        return BitList(int(self) & int(other))
+
+    def __or__(self, other):
+        return BitList(int(self) | int(other))
+
+    def __invert__(self):
+        return BitList(2 ** self.length - 1 - int(self))
 
 # Example
 # Creating a list of bits with length=10
+
 
 bl = BitList(length=10)
 bl[9] = 1
 bl[1] = 1
 bl[3] = 1
 
-# Prints: 1000001010 11
+# Prints:
+# 1000001010
+# 522
+# 111110101
+# 10
 
-print (bl, bl[1:5:2])
+print(bl)
+print(int(bl))
+print(~bl)
+print(bl & BitList(2))
